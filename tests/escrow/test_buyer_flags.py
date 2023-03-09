@@ -67,7 +67,7 @@ def test_buyer_arbitration_flag(escrow_contract):
     res = algod_client.account_info(sender_address)
     print("Account Balance:", res["amount"])
 
-    with open("build/abi.json") as f:
+    with open("build/contract.json") as f:
         js = f.read()
 
     c = Contract.from_json(js)

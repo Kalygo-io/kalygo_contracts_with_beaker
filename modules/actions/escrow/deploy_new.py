@@ -63,7 +63,7 @@ def deploy_new(
         glbl_seller=seller_address,
         glbl_escrow_1=escrow_payment_1,
         glbl_escrow_2=escrow_payment_2,
-        glbl_total_price=total_price,
+        glbl_total=total_price,
         glbl_inspect_start_date=inspection_start,
         glbl_inspect_end_date=inspection_end,
         glbl_inspect_extension_date=inspection_extension,

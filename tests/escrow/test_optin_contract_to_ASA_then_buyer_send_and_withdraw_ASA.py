@@ -15,7 +15,7 @@ from modules.actions.escrow.transfer_ASA_to_contract import transfer_ASA_to_cont
 
 from modules.actions.escrow.optout_contract_from_ASA import optout_contract_from_ASA
 from modules.actions.escrow.delete_contract import delete_contract
-import pytest
+
 from modules.helpers.time import get_current_timestamp, get_future_timestamp_in_secs
 from modules.clients.AlgodClient import Algod
 from modules.helpers.get_txn_params import get_txn_params
@@ -75,7 +75,7 @@ def test_optin_contract_to_ASA_then_buyer_send_and_withdraw_ASA(escrow_contract)
     res = algod_client.account_info(contract_address)
     assert res["amount"] == 0
 
-    with open("build/abi.json") as f:
+    with open("build/contract.json") as f:
         js = f.read()
     ABI = Contract.from_json(js)
 

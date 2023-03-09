@@ -7,15 +7,15 @@ indexer_url = "http://localhost:8980"
 indexer_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app_id = 71
 wallet_id = "wallet_QWEASD"
-wallet_phrase = ""
-account_a_address = "YRRGGYPFQYUIKHTYCWL3V7FGMDNNVZ46QJKE6GQQDURQL3NIVUIUFQSXAY"
-account_a_mnemonic = "blood sea glass identify broken curve clever entry photo keep item gravity coin dish stomach enlist daughter caution unable time scan rebel story abstract state"
-account_b_address = "GMIW2YOFLL5BHWIRXL5QKVY7SEIQ3GZF3ZL5IK3SDTA4D4NNGTA22W7QBY"
-account_b_mnemonic = "melt virtual width scout century advance auction acquire mechanic kitchen crumble tomorrow blanket vivid dash kid toddler dog bread stereo domain swift sorry above beauty"
-account_c_address = "A3326WI7EK3RVOQ4JRZSLY3HO26JCVGT7HGU2RBBFAX3KOVG4XFA4XCTOQ"
-account_c_mnemonic = "device hour foster key rhythm worry able mom student fatal spread forest fresh nominee frown hedgehog medal wood balance hole solar accident place able soap"
+wallet_phrase = "need left hire submit nuclear gloom game sausage nurse advice agree tonight secret much depth cradle island bronze lens night kingdom universe ethics about daring"
+account_a_address = "E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA"
+account_a_mnemonic = "knock october shift pause void orient hill alert climb flash vivid accident city kiwi edit enough any guess payment attack tail route move absorb punch"
+account_b_address = "YBF3RI4O4EITRLOHRNHZG3F5B4W7MMHZSRNR322QGZ7V2VY2XGUBWY4ODA"
+account_b_mnemonic = "enroll orphan point sort venue address goose soccer woman kitten average angry almost jump brand subject duty fade rug cave test mom soap abandon inherit"
+account_c_address = "HAN7OFJ3KTRCU7EUYQ5EBI232E2ZQWJEZAH6CWZ536Y43KFXA2DFLYL3FQ"
+account_c_mnemonic = "entire forget interest satisfy auction dragon effort crane diary judge sense design enjoy polar banner step awesome net spider donate slogan anchor hat able term"
 
-stablecoin_ASA = 23
+stablecoin_ASA = 4
 
 escrow_payment_1 = 1000000
 escrow_payment_2 = 2000000

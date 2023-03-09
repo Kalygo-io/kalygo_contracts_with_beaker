@@ -95,7 +95,7 @@ def test_buyer_pullout(escrow_contract):
 
     print("inspection period has elapsed...")
 
-    with open("build/abi.json") as f:
+    with open("build/contract.json") as f:
         js = f.read()
     c = Contract.from_json(js)
     atc = AtomicTransactionComposer()

@@ -80,7 +80,7 @@ def test_buyer_pullout(escrow_contract):
     buyer_private_key = get_private_key_from_mnemonic(buyer_mnemonic)
     signer = AccountTransactionSigner(buyer_private_key)
 
-    with open("build/abi.json") as f:
+    with open("build/contract.json") as f:
         js = f.read()
     c = Contract.from_json(js)
     atc = AtomicTransactionComposer()
