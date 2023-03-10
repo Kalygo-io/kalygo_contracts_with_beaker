@@ -18,6 +18,7 @@ All tests are using the code in found in the modules folder as helper functions.
 - poetry run compile
 - python -m pytest -s
 - python -m pytest -s tests/escrow/test_initial_state.py
+- python -m pytest -s tests/escrow/test_buyer_request_contract_update.py
 
 ## Generating Test Accounts
 

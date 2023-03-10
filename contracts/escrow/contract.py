@@ -43,8 +43,10 @@ class ContractUpdate(abi.NamedTuple):
 
 class EscrowContract(Application):
     buyer_metadata = Mapping(abi.String, abi.StaticBytes[Literal[2049]])
-
     seller_metadata = Mapping(abi.String, abi.StaticBytes[Literal[2050]])
+
+    buyer_updt = Mapping(abi.String, abi.StaticBytes[Literal[5012]])
+    seller_updt = Mapping(abi.String, abi.StaticBytes[Literal[5012]])
 
     glbl_buyer_pullout_flag: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64, default=Int(0)
@@ -55,12 +57,12 @@ class EscrowContract(Application):
     glbl_seller_arbitration_flag: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64, default=Int(0)
     )
-    glbl_buyer_update: ApplicationStateValue = ApplicationStateValue(
-        stack_type=TealType.bytes
-    )
-    glbl_seller_update: ApplicationStateValue = ApplicationStateValue(
-        stack_type=TealType.bytes
-    )
+    # glbl_buyer_update: ApplicationStateValue = ApplicationStateValue(
+    #     stack_type=TealType.bytes
+    # )
+    # glbl_seller_update: ApplicationStateValue = ApplicationStateValue(
+    #     stack_type=TealType.bytes
+    # )
     glbl_buyer: ApplicationStateValue = ApplicationStateValue(stack_type=TealType.bytes)
     glbl_seller: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.bytes
@@ -258,8 +260,8 @@ class EscrowContract(Application):
             Approve(),
         )
 
-    # @external(authorize=guard_withdraw_escrow_balance)
-    @external()
+    # @external()
+    @external(authorize=guard_withdraw_escrow_balance)
     def withdraw_escrow_balance(self):
         contract_ASA_balance = AssetHolding.balance(
             Global.current_application_address(), App.globalGet(GLOBAL_ASA_ID)
@@ -306,6 +308,14 @@ class EscrowContract(Application):
                 Approve(),
             ]
         )
+    
+    @external()
+    def buyer_delete_contract_updt_box(self):
+        result = App.box_delete(Bytes("buyer_updt"))
+        return Seq(
+            Assert(result == Int(1)),
+            Approve(),
+        )
 
     @external(authorize=guard_buyer_request_contract_update)
     def buyer_request_contract_update(
@@ -321,103 +331,127 @@ class EscrowContract(Application):
         # moving_date: abi.Uint64,
         # closing_date: abi.Uint64,
         # free_funds_date: abi.Uint64,
+        *,
+        output: abi.Uint64
     ):
         return Seq(
-            (rec_slr := ContractUpdate()).decode(
-                self.glbl_seller_update.get()
-            ),  # Get other party proposed revision
-            If(Len(self.glbl_seller_update.get()) > Int(0))
-            .Then(
-                If(
-                    And(
-                        rec_slr.buyer.use(lambda value: value.get() == buyer.get()),
-                        rec_slr.seller.use(lambda value: value.get() == seller.get()),
-                        rec_slr.escrow_1.use(
-                            lambda value: value.get() == escrow_1.get()
-                        ),
-                        rec_slr.escrow_2.use(
-                            lambda value: value.get() == escrow_2.get()
-                        ),
-                        rec_slr.total.use(lambda value: value.get() == total.get()),
-                        # rec_slr.inspect_start_date.use(
-                        #     lambda value: value.get() == inspect_start_date.get()
-                        # ),
-                        # rec_slr.inspect_end_date.use(
-                        #     lambda value: value.get() == inspect_end_date.get()
-                        # ),
-                        # rec_slr.inspect_extension_date.use(
-                        #     lambda value: value.get() == inspect_extension_date.get()
-                        # ),
-                        # rec_slr.moving_date.use(
-                        #     lambda value: value.get() == moving_date.get()
-                        # ),
-                        # rec_slr.closing_date.use(
-                        #     lambda value: value.get() == closing_date.get()
-                        # ),
-                        # rec_slr.free_funds_date.use(
-                        #     lambda value: value.get() == free_funds_date.get()
-                        # ),
-                    )
-                )
-                .Then(
-                    Seq(
-                        self.glbl_buyer.set(buyer.get()),
-                        self.glbl_seller.set(seller.get()),
-                        self.glbl_escrow_1.set(escrow_1.get()),
-                        self.glbl_escrow_2.set(escrow_2.get()),
-                        self.glbl_total.set(total.get()),
-                        # self.glbl_inspect_start_date.set(inspect_start_date.get()),
-                        # self.glbl_inspect_end_date.set(inspect_end_date.get()),
-                        # self.glbl_inspect_extension_date.set(
-                        #     inspect_extension_date.get()
-                        # ),
-                        # self.glbl_moving_date.set(moving_date.get()),
-                        # self.glbl_closing_date.set(closing_date.get()),
-                        # self.glbl_free_funds_date.set(free_funds_date.get()),
-                        #
-                        self.glbl_buyer_update.set(Bytes("")),
-                        self.glbl_seller_update.set(Bytes("")),
-                    )
-                )
-                .Else(
-                    Seq(
-                        (rec := ContractUpdate()).set(
-                            buyer,
-                            seller,
-                            escrow_1,
-                            escrow_2,
-                            total,
-                            # inspect_start_date,
-                            # inspect_end_date,
-                            # inspect_extension_date,
-                            # moving_date,
-                            # closing_date,
-                            # free_funds_date,
-                        ),
-                        self.glbl_buyer_update.set(rec.encode()),
-                    )
-                )
-            )
-            .Else(
-                Seq(
-                    (rec := ContractUpdate()).set(
-                        buyer,
-                        seller,
-                        escrow_1,
-                        escrow_2,
-                        total,
-                        # inspect_start_date,
-                        # inspect_end_date,
-                        # inspect_extension_date,
-                        # moving_date,
-                        # closing_date,
-                        # free_funds_date,
-                    ),
-                    self.glbl_buyer_update.set(rec.encode()),
-                )
+            (rec := ContractUpdate()).set(
+                buyer,
+                seller,
+                escrow_1,
+                escrow_2,
+                total,
+                # inspect_start_date,
+                # inspect_end_date,
+                # inspect_extension_date,
+                # moving_date,
+                # closing_date,
+                # free_funds_date,
             ),
-            Approve(),
+            # self.glbl_buyer_update.set(rec.encode()),
+            # App.box_put(Bytes("buyer_updt"), rec.encode()),
+            self.buyer_updt[Bytes("buyer_updt")].set(Bytes('___')),
+            buyer_updt_box :=  App.box_get(Bytes("buyer_updt")),
+            Assert(buyer_updt_box.hasValue()),
+            output.decode(buyer_updt_box.value()),
+            Approve()
         )
+        # return Seq(
+        #     (rec_slr := ContractUpdate()).decode(
+        #         self.glbl_seller_update.get()
+        #     ),  # Get other party proposed revision
+        #     If(Len(self.glbl_seller_update.get()) > Int(0))
+        #     .Then(
+        #         If(
+        #             And(
+        #                 rec_slr.buyer.use(lambda value: value.get() == buyer.get()),
+        #                 rec_slr.seller.use(lambda value: value.get() == seller.get()),
+        #                 rec_slr.escrow_1.use(
+        #                     lambda value: value.get() == escrow_1.get()
+        #                 ),
+        #                 rec_slr.escrow_2.use(
+        #                     lambda value: value.get() == escrow_2.get()
+        #                 ),
+        #                 rec_slr.total.use(lambda value: value.get() == total.get()),
+        #                 # rec_slr.inspect_start_date.use(
+        #                 #     lambda value: value.get() == inspect_start_date.get()
+        #                 # ),
+        #                 # rec_slr.inspect_end_date.use(
+        #                 #     lambda value: value.get() == inspect_end_date.get()
+        #                 # ),
+        #                 # rec_slr.inspect_extension_date.use(
+        #                 #     lambda value: value.get() == inspect_extension_date.get()
+        #                 # ),
+        #                 # rec_slr.moving_date.use(
+        #                 #     lambda value: value.get() == moving_date.get()
+        #                 # ),
+        #                 # rec_slr.closing_date.use(
+        #                 #     lambda value: value.get() == closing_date.get()
+        #                 # ),
+        #                 # rec_slr.free_funds_date.use(
+        #                 #     lambda value: value.get() == free_funds_date.get()
+        #                 # ),
+        #             )
+        #         )
+        #         .Then(
+        #             Seq(
+        #                 self.glbl_buyer.set(buyer.get()),
+        #                 self.glbl_seller.set(seller.get()),
+        #                 self.glbl_escrow_1.set(escrow_1.get()),
+        #                 self.glbl_escrow_2.set(escrow_2.get()),
+        #                 self.glbl_total.set(total.get()),
+        #                 # self.glbl_inspect_start_date.set(inspect_start_date.get()),
+        #                 # self.glbl_inspect_end_date.set(inspect_end_date.get()),
+        #                 # self.glbl_inspect_extension_date.set(
+        #                 #     inspect_extension_date.get()
+        #                 # ),
+        #                 # self.glbl_moving_date.set(moving_date.get()),
+        #                 # self.glbl_closing_date.set(closing_date.get()),
+        #                 # self.glbl_free_funds_date.set(free_funds_date.get()),
+        #                 #
+        #                 self.glbl_buyer_update.set(Bytes("")),
+        #                 self.glbl_seller_update.set(Bytes("")),
+        #             )
+        #         )
+        #         .Else(
+        #             Seq(
+        #                 (rec := ContractUpdate()).set(
+        #                     buyer,
+        #                     seller,
+        #                     escrow_1,
+        #                     escrow_2,
+        #                     total,
+        #                     # inspect_start_date,
+        #                     # inspect_end_date,
+        #                     # inspect_extension_date,
+        #                     # moving_date,
+        #                     # closing_date,
+        #                     # free_funds_date,
+        #                 ),
+        #                 self.glbl_buyer_update.set(rec.encode()),
+        #             )
+        #         )
+        #     )
+        #     .Else(
+        #         Seq(
+        #             (rec := ContractUpdate()).set(
+        #                 buyer,
+        #                 seller,
+        #                 escrow_1,
+        #                 escrow_2,
+        #                 total,
+        #                 # inspect_start_date,
+        #                 # inspect_end_date,
+        #                 # inspect_extension_date,
+        #                 # moving_date,
+        #                 # closing_date,
+        #                 # free_funds_date,
+        #             ),
+        #             self.glbl_buyer_update.set(rec.encode()),
+        #         )
+        #     ),
+        #     Approve(),
+        # )
 
     @external(authorize=guard_seller_request_contract_update)
     def seller_request_contract_update(
@@ -435,98 +469,105 @@ class EscrowContract(Application):
         # free_funds_date: abi.Uint64,
     ):
         return Seq(
-            (rec_byr := ContractUpdate()).decode(
-                self.glbl_buyer_update.get()
-            ),  # Get other party proposed revision
-            If(Len(self.glbl_buyer_update.get()) > Int(0))
-            .Then(
-                If(
-                    And(
-                        rec_byr.buyer.use(lambda value: value.get() == buyer.get()),
-                        rec_byr.seller.use(lambda value: value.get() == seller.get()),
-                        rec_byr.escrow_1.use(
-                            lambda value: value.get() == escrow_1.get()
-                        ),
-                        rec_byr.escrow_2.use(
-                            lambda value: value.get() == escrow_2.get()
-                        ),
-                        rec_byr.total.use(lambda value: value.get() == total.get()),
-                        # rec_byr.inspect_start_date.use(
-                        #     lambda value: value.get() == inspect_start_date.get()
-                        # ),
-                        # rec_byr.inspect_end_date.use(
-                        #     lambda value: value.get() == inspect_end_date.get()
-                        # ),
-                        # rec_byr.inspect_extension_date.use(
-                        #     lambda value: value.get() == inspect_extension_date.get()
-                        # ),
-                        # rec_byr.moving_date.use(
-                        #     lambda value: value.get() == moving_date.get()
-                        # ),
-                        # rec_byr.closing_date.use(
-                        #     lambda value: value.get() == closing_date.get()
-                        # ),
-                        # rec_byr.free_funds_date.use(
-                        #     lambda value: value.get() == free_funds_date.get()
-                        # ),
-                    )
-                )
-                .Then(
-                    Seq(
-                        self.glbl_buyer.set(buyer.get()),
-                        self.glbl_seller.set(seller.get()),
-                        self.glbl_escrow_1.set(escrow_1.get()),
-                        self.glbl_escrow_2.set(escrow_2.get()),
-                        self.glbl_total.set(total.get()),
-                        # self.glbl_inspect_start_date.set(inspect_start_date.get()),
-                        # self.glbl_inspect_end_date.set(inspect_end_date.get()),
-                        # self.glbl_inspect_extension_date.set(
-                        #     inspect_extension_date.get()
-                        # ),
-                        # self.glbl_moving_date.set(moving_date.get()),
-                        # self.glbl_closing_date.set(closing_date.get()),
-                        # self.glbl_free_funds_date.set(free_funds_date.get()),
-                        #
-                        self.glbl_buyer_update.set(Bytes("")),
-                        self.glbl_seller_update.set(Bytes("")),
-                    )
-                )
-                .Else(
-                    Seq(
-                        (rec := ContractUpdate()).set(
-                            buyer,
-                            seller,
-                            escrow_1,
-                            escrow_2,
-                            total,
-                            # inspect_start_date,
-                            # inspect_end_date,
-                            # inspect_extension_date,
-                            # moving_date,
-                            # closing_date,
-                            # free_funds_date,
-                        ),
-                        self.glbl_seller_update.set(rec.encode()),
-                    )
-                )
-            )
-            .Else(
-                Seq(
-                    (rec := ContractUpdate()).set(
-                        buyer,
-                        seller,
-                        escrow_1,
-                        escrow_2,
-                        total,
-                        # inspect_start_date,
-                        # inspect_end_date,
-                        # inspect_extension_date,
-                        # moving_date,
-                        # closing_date,
-                        # free_funds_date,
-                    ),
-                    self.glbl_seller_update.set(rec.encode()),
-                )
-            ),
-            Approve(),
+            # App.box_put(Bytes(""), val.encode()),
+            # boxint :=  App.box_get(Bytes("Cnt")),
+            # Assert(boxint.hasValue()),
+            # output.decode(boxint.value()),
+            Approve()
         )
+        # return Seq(
+        #     (rec_byr := ContractUpdate()).decode(
+        #         self.glbl_buyer_update.get()
+        #     ),  # Get other party proposed revision
+        #     If(Len(self.glbl_buyer_update.get()) > Int(0))
+        #     .Then(
+        #         If(
+        #             And(
+        #                 rec_byr.buyer.use(lambda value: value.get() == buyer.get()),
+        #                 rec_byr.seller.use(lambda value: value.get() == seller.get()),
+        #                 rec_byr.escrow_1.use(
+        #                     lambda value: value.get() == escrow_1.get()
+        #                 ),
+        #                 rec_byr.escrow_2.use(
+        #                     lambda value: value.get() == escrow_2.get()
+        #                 ),
+        #                 rec_byr.total.use(lambda value: value.get() == total.get()),
+        #                 # rec_byr.inspect_start_date.use(
+        #                 #     lambda value: value.get() == inspect_start_date.get()
+        #                 # ),
+        #                 # rec_byr.inspect_end_date.use(
+        #                 #     lambda value: value.get() == inspect_end_date.get()
+        #                 # ),
+        #                 # rec_byr.inspect_extension_date.use(
+        #                 #     lambda value: value.get() == inspect_extension_date.get()
+        #                 # ),
+        #                 # rec_byr.moving_date.use(
+        #                 #     lambda value: value.get() == moving_date.get()
+        #                 # ),
+        #                 # rec_byr.closing_date.use(
+        #                 #     lambda value: value.get() == closing_date.get()
+        #                 # ),
+        #                 # rec_byr.free_funds_date.use(
+        #                 #     lambda value: value.get() == free_funds_date.get()
+        #                 # ),
+        #             )
+        #         )
+        #         .Then(
+        #             Seq(
+        #                 self.glbl_buyer.set(buyer.get()),
+        #                 self.glbl_seller.set(seller.get()),
+        #                 self.glbl_escrow_1.set(escrow_1.get()),
+        #                 self.glbl_escrow_2.set(escrow_2.get()),
+        #                 self.glbl_total.set(total.get()),
+        #                 # self.glbl_inspect_start_date.set(inspect_start_date.get()),
+        #                 # self.glbl_inspect_end_date.set(inspect_end_date.get()),
+        #                 # self.glbl_inspect_extension_date.set(
+        #                 #     inspect_extension_date.get()
+        #                 # ),
+        #                 # self.glbl_moving_date.set(moving_date.get()),
+        #                 # self.glbl_closing_date.set(closing_date.get()),
+        #                 # self.glbl_free_funds_date.set(free_funds_date.get()),
+        #                 #
+        #                 self.glbl_buyer_update.set(Bytes("")),
+        #                 self.glbl_seller_update.set(Bytes("")),
+        #             )
+        #         )
+        #         .Else(
+        #             Seq(
+        #                 (rec := ContractUpdate()).set(
+        #                     buyer,
+        #                     seller,
+        #                     escrow_1,
+        #                     escrow_2,
+        #                     total,
+        #                     # inspect_start_date,
+        #                     # inspect_end_date,
+        #                     # inspect_extension_date,
+        #                     # moving_date,
+        #                     # closing_date,
+        #                     # free_funds_date,
+        #                 ),
+        #                 self.glbl_seller_update.set(rec.encode()),
+        #             )
+        #         )
+        #     )
+        #     .Else(
+        #         Seq(
+        #             (rec := ContractUpdate()).set(
+        #                 buyer,
+        #                 seller,
+        #                 escrow_1,
+        #                 escrow_2,
+        #                 total,
+        #                 # inspect_start_date,
+        #                 # inspect_end_date,
+        #                 # inspect_extension_date,
+        #                 # moving_date,
+        #                 # closing_date,
+        #                 # free_funds_date,
+        #             ),
+        #             self.glbl_seller_update.set(rec.encode()),
+        #         )
+        #     ),
+        #     Approve(),
+        # )

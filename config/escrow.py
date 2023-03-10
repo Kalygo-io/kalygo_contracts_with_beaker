@@ -7,15 +7,15 @@ indexer_url = "http://localhost:8980"
 indexer_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app_id = 71
 wallet_id = "wallet_QWEASD"
-wallet_phrase = "need left hire submit nuclear gloom game sausage nurse advice agree tonight secret much depth cradle island bronze lens night kingdom universe ethics about daring"
-account_a_address = "E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA"
-account_a_mnemonic = "knock october shift pause void orient hill alert climb flash vivid accident city kiwi edit enough any guess payment attack tail route move absorb punch"
-account_b_address = "YBF3RI4O4EITRLOHRNHZG3F5B4W7MMHZSRNR322QGZ7V2VY2XGUBWY4ODA"
-account_b_mnemonic = "enroll orphan point sort venue address goose soccer woman kitten average angry almost jump brand subject duty fade rug cave test mom soap abandon inherit"
-account_c_address = "HAN7OFJ3KTRCU7EUYQ5EBI232E2ZQWJEZAH6CWZ536Y43KFXA2DFLYL3FQ"
-account_c_mnemonic = "entire forget interest satisfy auction dragon effort crane diary judge sense design enjoy polar banner step awesome net spider donate slogan anchor hat able term"
+wallet_phrase = "release aisle dash public else vital liquid place summer only hollow sight mother rule reduce point steak valve hero lunch roof analyst exit absorb carry"
+account_a_address = "ON65WOP4UAHNLA3MGTHVQDF3ETCSZAAZ2X6DZLPXPEQARHNBTTYM6ED3G4"
+account_a_mnemonic = "stem tennis metal drum steak fitness shuffle ring panic dizzy account sound emerge target measure venture stomach jealous tube level barely shoot trash ability copy"
+account_b_address = "7Q3ZBJVU64SVAFVVOLFWOJ37SJMRKKMUM2WGUC5SXXKSUDQIT6DAG3LKKI"
+account_b_mnemonic = "toddler dune trick assume true alarm eternal tennis emerge prize gossip warrior own crucial region first pole force turkey live receive job rain about quantum"
+account_c_address = "Y6ABMSIR63VINSGXSMBA5H64ELQUP4FFTCFX2OJOKT4HGIR22X5DMGDMQ4"
+account_c_mnemonic = "violin moon habit siren approve cliff kiss clerk increase doll unit version voice flight admit try lab hard solution book often drum enter able pigeon"
 
-stablecoin_ASA = 4
+stablecoin_ASA = 12
 
 escrow_payment_1 = 1000000
 escrow_payment_2 = 2000000
