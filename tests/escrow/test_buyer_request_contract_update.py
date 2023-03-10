@@ -6,6 +6,7 @@ from modules.actions.escrow.deploy_new import deploy_new
 from modules.actions.escrow.delete_contract import delete_contract
 
 from algosdk import logic
+import base64
 from contracts.escrow.contract import EscrowContract
 from algosdk.abi import Contract
 import config.escrow as config
@@ -82,7 +83,7 @@ def test_buyer_request_contract_update(escrow_contract):
         buyer_address,
         buyer_private_key,
         app_address,
-        112100
+        212100
     )
     # --- --- --- --- ---
 
@@ -111,6 +112,20 @@ def test_buyer_request_contract_update(escrow_contract):
 
     print("_>_>_ _>_>_", res["amount"])
 
+    res = algod_client.application_boxes(app_id)
+    print(algod_client.application_boxes(app_id))
+    for box in res["boxes"]:
+        print("box", box)
+        box_name = base64.b64decode(box["name"]).decode("utf-8")
+        print("box key:", box_name)
+        box_value = algod_client.application_box_by_name(
+            app_id, bytes(box_name, "utf-8")
+        )["value"]
+        print(
+            "box value:",
+            base64.b64decode(box_value).decode("utf-8"),
+        )
+
     atc_2 = AtomicTransactionComposer()
     txn_params = get_txn_params(algod_client, constants.MIN_TXN_FEE, 1)
 
@@ -137,5 +152,3 @@ def test_buyer_request_contract_update(escrow_contract):
 
     app_logs = Indexer.getClient().application_logs(app_id)
     print('app_logs POST', app_logs)
-
-    
