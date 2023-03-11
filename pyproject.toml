@@ -9,6 +9,7 @@ packages = [{include = "scripts"}, {include = "modules"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 beaker-pyteal = "^0.4.2"
+black = "^23.1.0"
 
 [tool.poetry.scripts]
 compile = "scripts.escrow.compile:main"

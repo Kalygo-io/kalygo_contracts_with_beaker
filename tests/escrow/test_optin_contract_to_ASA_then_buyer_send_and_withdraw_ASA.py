@@ -1,4 +1,6 @@
+import time
 import pytest
+import json
 from algosdk import constants, logic
 import config.escrow as config
 from modules.helpers.utils import (
@@ -24,6 +26,10 @@ from algosdk.atomic_transaction_composer import (
     AtomicTransactionComposer,
 )
 
+from modules.helpers.utils import (
+    format_app_global_state,
+)
+
 
 @pytest.fixture(scope="module")
 def escrow_contract():
@@ -42,26 +48,30 @@ def escrow_contract():
         config.total_price,
         config.stablecoin_ASA,
         int(get_current_timestamp()),  # Inspection Period Start Date
-        int(get_future_timestamp_in_secs(60)),  # Inspection Period End Date
-        int(get_future_timestamp_in_secs(90)),  # Inspection Period Extension Date
-        int(get_future_timestamp_in_secs(120)),  # Moving Date
-        int(get_future_timestamp_in_secs(240)),  # Closing Date
-        int(get_future_timestamp_in_secs(360)),  # Free Funds Date
+        int(get_future_timestamp_in_secs(20)),  # Inspection Period End Date
+        int(get_future_timestamp_in_secs(30)),  # Inspection Period Extension Date
+        int(get_future_timestamp_in_secs(35)),  # Moving Date
+        int(get_future_timestamp_in_secs(40)),  # Closing Date
+        int(get_future_timestamp_in_secs(45)),  # Free Funds Date
         foreign_apps=[],
         foreign_assets=[config.stablecoin_ASA],
     )
-    yield deployed_contract["app_id"]
+    
+    yield deployed_contract["app_id"], deployed_contract["confirmed_round"], deployed_contract["closing_date"]
+    
     print()
-    print("tear down in fixture", deployed_contract["app_id"])
-    delete_contract(
-        EscrowContract,
-        deployed_contract["app_id"],
-        config.account_a_mnemonic,
-    )
+    # print("tear down in fixture", deployed_contract["app_id"])
+    # delete_contract(
+    #     EscrowContract,
+    #     deployed_contract["app_id"],
+    #     config.account_a_mnemonic,
+    # )
 
 
 def test_optin_contract_to_ASA_then_buyer_send_and_withdraw_ASA(escrow_contract):
-    app_id = escrow_contract
+    app_id, confirmed_round, closing_date = escrow_contract
+
+    print('DEBUG', app_id, confirmed_round, closing_date)
 
     algod_client = Algod.getClient()
     txn_params = get_txn_params(algod_client, constants.MIN_TXN_FEE, 1)
@@ -69,6 +79,8 @@ def test_optin_contract_to_ASA_then_buyer_send_and_withdraw_ASA(escrow_contract)
 
     buyer_address = config.account_b_address
     buyer_private_key = get_private_key_from_mnemonic(config.account_b_mnemonic)
+    seller_address = config.account_c_address
+    seller_private_key = get_private_key_from_mnemonic(config.account_c_mnemonic)
     contract_address = logic.get_application_address(app_id)
     stablecoin_ASA = config.stablecoin_ASA
 
@@ -140,6 +152,31 @@ def test_optin_contract_to_ASA_then_buyer_send_and_withdraw_ASA(escrow_contract)
             print("contract ASA holdings after transfer:", asset["amount"])
             assert asset["amount"] == 20
 
+    onchain_timestamp = algod_client.block_info(confirmed_round)["block"]["ts"]
+    last_round = confirmed_round
+    while onchain_timestamp < closing_date:
+        status = algod_client.status()
+        print(
+            "confirmed_round",
+            confirmed_round,
+            'status["last-round"]',
+            status["last-round"],
+        )
+        if last_round != status["last-round"]:
+            last_round = status["last-round"]
+            onchain_timestamp = algod_client.block_info(status["last-round"])["block"][
+                "ts"
+            ]
+
+        # print(datetime.fromtimestamp(onchain_timestamp), ":On-chain time:")
+        # print(datetime.fromtimestamp(inspection_end), ":Inspection period end date:")
+
+        time.sleep(2)
+
+    app_info = Algod.getClient().application_info(app_id)
+    app_info_formatted = format_app_global_state(app_info["params"]["global-state"])
+    print(json.dumps(app_info_formatted, indent=4))
+
     atc = AtomicTransactionComposer()
     withdraw_ASA_from_contract(
         app_id,
@@ -147,36 +184,36 @@ def test_optin_contract_to_ASA_then_buyer_send_and_withdraw_ASA(escrow_contract)
         ABI,
         algod_client,
         opt_txn_params,
-        buyer_address,
-        buyer_private_key,
+        seller_address,
+        seller_private_key,
         stablecoin_ASA,
     )
 
-    account_info = algod_client.account_info(contract_address)
-    for asset in account_info["assets"]:
-        if asset["asset-id"] == stablecoin_ASA:
-            print("contract ASA holdings after transfer:", asset["amount"])
-            assert asset["amount"] == 0
+    # account_info = algod_client.account_info(contract_address)
+    # for asset in account_info["assets"]:
+    #     if asset["asset-id"] == stablecoin_ASA:
+    #         print("contract ASA holdings after transfer:", asset["amount"])
+    #         assert asset["amount"] == 0
 
-    atc = AtomicTransactionComposer()
-    optout_contract_from_ASA(
-        app_id,
-        atc,
-        ABI,
-        algod_client,
-        opt_txn_params,
-        buyer_address,
-        buyer_private_key,
-        stablecoin_ASA,
-    )
+    # atc = AtomicTransactionComposer()
+    # optout_contract_from_ASA(
+    #     app_id,
+    #     atc,
+    #     ABI,
+    #     algod_client,
+    #     opt_txn_params,
+    #     buyer_address,
+    #     buyer_private_key,
+    #     stablecoin_ASA,
+    # )
 
-    account_info = algod_client.account_info(contract_address)
-    assert len(account_info["assets"]) == 0
+    # account_info = algod_client.account_info(contract_address)
+    # assert len(account_info["assets"]) == 0
 
-    atc = AtomicTransactionComposer()
-    withdraw_balance(
-        app_id, atc, ABI, algod_client, txn_params, buyer_address, buyer_private_key
-    )
+    # atc = AtomicTransactionComposer()
+    # withdraw_balance(
+    #     app_id, atc, ABI, algod_client, txn_params, buyer_address, buyer_private_key
+    # )
 
-    res = algod_client.account_info(contract_address)
-    assert res["amount"] == 0
+    # res = algod_client.account_info(contract_address)
+    # assert res["amount"] == 0

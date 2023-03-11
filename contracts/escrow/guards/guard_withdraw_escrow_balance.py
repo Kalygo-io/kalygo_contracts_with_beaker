@@ -11,41 +11,54 @@ def guard_withdraw_escrow_balance(acct: Expr):
     )
     return Seq(
         contract_ASA_balance,
-        Or(
-            And(
-                # testing conditions under which BUYER can withdraw money
-                App.globalGet(GLOBAL_BUYER) == Txn.sender(),
-                App.globalGet(GLOBAL_MOVING_DATE) < Global.latest_timestamp(),
-                App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) == Int(1),
-                App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
-                App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
-                contract_ASA_balance.value() > Int(0),
+        If(
+            Or(
+                And(
+                    # testing conditions under which BUYER can withdraw money
+                    App.globalGet(GLOBAL_BUYER) == Txn.sender(),
+                    App.globalGet(GLOBAL_MOVING_DATE) < Global.latest_timestamp(),
+                    App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) == Int(1),
+                    App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
+                    App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
+                    contract_ASA_balance.value() > Int(0),
+                ),
+                And(
+                    # testing conditions under which BUYER can withdraw money
+                    App.globalGet(GLOBAL_BUYER) == Txn.sender(),
+                    App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) == Int(1),
+                    App.globalGet(GLOBAL_FREE_FUNDS_DATE) < Global.latest_timestamp(),
+                    App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
+                    contract_ASA_balance.value() > Int(0),
+                ),
+                And(
+                    # testing conditions under which SELLER can withdraw money
+
+                    App.globalGet(GLOBAL_SELLER) == Txn.sender(),
+                    App.globalGet(GLOBAL_CLOSING_DATE) < Global.latest_timestamp(),
+                    App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) < Int(1),
+                    App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
+                    App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
+                    contract_ASA_balance.value() > Int(0),
+                ),
+                And(
+                    # testing conditions under which SELLER can withdraw money
+                    App.globalGet(GLOBAL_SELLER) == Txn.sender(),
+                    App.globalGet(GLOBAL_FREE_FUNDS_DATE) < Global.latest_timestamp(),
+                    App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) < Int(1),
+                    App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
+                    App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) == Int(1),
+                    contract_ASA_balance.value() > Int(0),
+                ),
             ),
-            And(
-                # testing conditions under which BUYER can withdraw money
-                App.globalGet(GLOBAL_BUYER) == Txn.sender(),
-                App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) == Int(1),
-                App.globalGet(GLOBAL_FREE_FUNDS_DATE) < Global.latest_timestamp(),
-                App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
-                contract_ASA_balance.value() > Int(0),
-            ),
-            And(
-                # testing conditions under which SELLER can withdraw money
-                App.globalGet(GLOBAL_SELLER) == Txn.sender(),
-                App.globalGet(GLOBAL_CLOSING_DATE) < Global.latest_timestamp(),
-                App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) < Int(1),
-                App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
-                App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) < Int(1),
-                contract_ASA_balance.value() > Int(0),
-            ),
-            And(
-                # testing conditions under which SELLER can withdraw money
-                App.globalGet(GLOBAL_SELLER) == Txn.sender(),
-                App.globalGet(GLOBAL_FREE_FUNDS_DATE) < Global.latest_timestamp(),
-                App.globalGet(GLOBAL_BUYER_PULLOUT_FLAG) < Int(1),
-                App.globalGet(GLOBAL_BUYER_ARBITRATION_FLAG) < Int(1),
-                App.globalGet(GLOBAL_SELLER_ARBITRATION_FLAG) == Int(1),
-                contract_ASA_balance.value() > Int(0),
-            ),
-        ),
+        )
+        .Then(
+            Seq(
+                Int(1)
+            )
+        )
+        .Else(
+            Seq(
+                Int(0)
+            )
+        )
     )

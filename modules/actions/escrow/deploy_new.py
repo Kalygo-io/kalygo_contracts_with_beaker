@@ -94,4 +94,5 @@ def deploy_new(
         "confirmed_round": confirmed_round,
         "inspection_start": inspection_start,
         "inspection_end": inspection_end,
+        "closing_date": closing_date
     }

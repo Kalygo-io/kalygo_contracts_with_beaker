@@ -8,6 +8,7 @@ from algosdk.atomic_transaction_composer import (
 )
 from algosdk.abi import Contract
 
+
 def buyer_request_contract_updt(
     app_id: int,
     atc: AtomicTransactionComposer,
@@ -36,13 +37,19 @@ def buyer_request_contract_updt(
         params,
         signer,
         method_args=[
-            'E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA', # buyer,
-            'E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA', # seller,
-            100, # escrowAmount1AsInt,
-            200, # escrowAmount2AsInt,
-            300 # escrowTotalAsInt,
+            "E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA",  # buyer,
+            "E4S5DU5BXPHFSJI4D7DPR3L2EXSPTCHAHZFQEQIHE655N6GCM72YCKSMRA",  # seller,
+            100,  # escrowAmount1AsInt,
+            200,  # escrowAmount2AsInt,
+            300,  # escrowTotalAsInt,
+            1678464673,  # IP start
+            1678464773,  # IP end
+            1678464873,  # IP ext
+            1678464973,  # IP move
+            1678465073,  # IP close
+            1678465173,  # IP free funds
         ],
-        boxes=[[app_id, "buyer_updt"]],  # type: ignore
+        boxes=[[app_id, "buyer_updt"], [app_id, "seller_updt"]],  # type: ignore
     )
 
     res = atc.execute(algod_client, 2)
