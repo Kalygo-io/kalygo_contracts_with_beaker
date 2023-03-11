@@ -45,8 +45,8 @@ class EscrowContract(Application):
     buyer_metadata = Mapping(abi.String, abi.StaticBytes[Literal[2049]])
     seller_metadata = Mapping(abi.String, abi.StaticBytes[Literal[2050]])
 
-    buyer_updt = Mapping(abi.String, abi.StaticBytes[Literal[5012]])
-    seller_updt = Mapping(abi.String, abi.StaticBytes[Literal[5012]])
+    buyer_updt = Mapping(abi.String, ContractUpdate)
+    seller_updt = Mapping(abi.String, ContractUpdate)
 
     glbl_buyer_pullout_flag: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64, default=Int(0)
@@ -331,8 +331,6 @@ class EscrowContract(Application):
         # moving_date: abi.Uint64,
         # closing_date: abi.Uint64,
         # free_funds_date: abi.Uint64,
-        *,
-        output: abi.Uint64
     ):
         return Seq(
             (rec := ContractUpdate()).set(
@@ -351,9 +349,9 @@ class EscrowContract(Application):
             # self.glbl_buyer_update.set(rec.encode()),
             # App.box_put(Bytes("buyer_updt"), rec.encode()),
             self.buyer_updt[Bytes("buyer_updt")].set(rec.encode()),
-            buyer_updt_box :=  App.box_get(Bytes("buyer_updt")),
-            Assert(buyer_updt_box.hasValue()),
-            output.decode(buyer_updt_box.value()),
+            # buyer_updt_box :=  self.buyer_updt[Bytes("buyer_updt")].get(),
+            # Assert(buyer_updt_box.hasValue()),
+            # output.decode(buyer_updt_box.value()),
             Approve()
         )
         # return Seq(
