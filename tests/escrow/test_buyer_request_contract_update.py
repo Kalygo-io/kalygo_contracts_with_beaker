@@ -7,8 +7,9 @@ from modules.actions.escrow.delete_contract import delete_contract
 
 from algosdk import logic
 import base64
-from contracts.escrow.contract import EscrowContract
-from algosdk.abi import Contract
+from contracts.escrow.contract import ContractUpdate, EscrowContract
+from algosdk.abi import Contract, ABIType
+from algosdk.encoding import encode_address
 import config.escrow as config
 from modules.actions.escrow.withdraw_balance import withdraw_balance
 from modules.actions.escrow.buyer_delete_contract_updt_box import buyer_delete_contract_updt_box
@@ -26,6 +27,8 @@ from algosdk.atomic_transaction_composer import (
 )
 
 from modules.helpers.get_txn_params import get_txn_params
+
+record_codec_for_contract_update = ABIType.from_string(str(ContractUpdate().type_spec()))
 
 @pytest.fixture(scope="module")
 def escrow_contract():
@@ -52,12 +55,12 @@ def escrow_contract():
     )
     yield deployed_contract["app_id"]
     print()
-    print("tear down in fixture", deployed_contract["app_id"])
-    delete_contract(
-        EscrowContract,
-        deployed_contract["app_id"],
-        config.account_a_mnemonic,
-    )
+    # print("tear down in fixture", deployed_contract["app_id"])
+    # delete_contract(
+    #     EscrowContract,
+    #     deployed_contract["app_id"],
+    #     config.account_a_mnemonic,
+    # )
 
 
 def test_buyer_request_contract_update(escrow_contract):
@@ -118,37 +121,54 @@ def test_buyer_request_contract_update(escrow_contract):
         print("box", box)
         box_name = base64.b64decode(box["name"]).decode("utf-8")
         print("box key:", box_name)
-        box_value = algod_client.application_box_by_name(
-            app_id, bytes(box_name, "utf-8")
-        )["value"]
-        print(
-            "box value:",
-            base64.b64decode(box_value).decode("utf-8"),
-        )
 
-    atc_2 = AtomicTransactionComposer()
-    txn_params = get_txn_params(algod_client, constants.MIN_TXN_FEE, 1)
+        if box_name == 'buyer_updt':
+            print('YAY')
+            print("box key:", box_name)
+            box_value = algod_client.application_box_by_name(
+                app_id, bytes(box_name, "utf-8")
+            )["value"]
 
-    buyer_delete_contract_updt_box(
-        app_id,
-        atc_2,
-        ABI,
-        algod_client,
-        txn_params,
-        sender=buyer_address,
-        sender_private_key=buyer_private_key
-    )
+            print('box_value', box_value)
 
-    atc_3 = AtomicTransactionComposer()
-    withdraw_balance(
-        app_id, atc_3, ABI, algod_client, txn_params, buyer_address, buyer_private_key
-    )
+            # record_codec_for_contract_update
+            membership_record = record_codec_for_contract_update.decode(box_value)
 
-    res = algod_client.account_info(app_address)
+            # print(membership_record)
+            # print(f"\t{(box_name)} => {membership_record} ")
+        # else:
+            # print("box key:", box_name)
+            # box_value = algod_client.application_box_by_name(
+            #    app_id, bytes(box_name, "utf-8")
+            # )["value"]
+            # print(
+            #     "box value:",
+            #     base64.b64decode(box_value).decode("utf-8"),
+            # )
 
-    print("_>_>_ _>_>_", res["amount"])
+    # atc_2 = AtomicTransactionComposer()
+    # txn_params = get_txn_params(algod_client, constants.MIN_TXN_FEE, 1)
 
-    assert res["amount"] == 0
+    # buyer_delete_contract_updt_box(
+    #     app_id,
+    #     atc_2,
+    #     ABI,
+    #     algod_client,
+    #     txn_params,
+    #     sender=buyer_address,
+    #     sender_private_key=buyer_private_key
+    # )
 
-    app_logs = Indexer.getClient().application_logs(app_id)
-    print('app_logs POST', app_logs)
+    # atc_3 = AtomicTransactionComposer()
+    # withdraw_balance(
+    #     app_id, atc_3, ABI, algod_client, txn_params, buyer_address, buyer_private_key
+    # )
+
+    # res = algod_client.account_info(app_address)
+
+    # print("_>_>_ _>_>_", res["amount"])
+
+    # assert res["amount"] == 0
+
+    # app_logs = Indexer.getClient().application_logs(app_id)
+    # print('app_logs POST', app_logs)

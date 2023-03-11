@@ -348,7 +348,7 @@ class EscrowContract(Application):
             ),
             # self.glbl_buyer_update.set(rec.encode()),
             # App.box_put(Bytes("buyer_updt"), rec.encode()),
-            self.buyer_updt[Bytes("buyer_updt")].set(rec.encode()),
+            self.buyer_updt[Bytes("buyer_updt")].set(rec),
             # buyer_updt_box :=  self.buyer_updt[Bytes("buyer_updt")].get(),
             # Assert(buyer_updt_box.hasValue()),
             # output.decode(buyer_updt_box.value()),
