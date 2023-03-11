@@ -117,6 +117,8 @@ def test_buyer_request_contract_update(escrow_contract):
 
     res = algod_client.application_boxes(app_id)
     print(algod_client.application_boxes(app_id))
+
+    membership_record = None
     for box in res["boxes"]:
         print("box", box)
         box_name = base64.b64decode(box["name"]).decode("utf-8")
@@ -129,22 +131,12 @@ def test_buyer_request_contract_update(escrow_contract):
                 app_id, bytes(box_name, "utf-8")
             )["value"]
 
-            print('box_value', box_value)
+            print('box_value',box_value)
+            
+            membership_record = record_codec_for_contract_update.decode(base64.b64decode(box_value))
 
-            # record_codec_for_contract_update
-            membership_record = record_codec_for_contract_update.decode(box_value)
 
-            # print(membership_record)
-            # print(f"\t{(box_name)} => {membership_record} ")
-        # else:
-            # print("box key:", box_name)
-            # box_value = algod_client.application_box_by_name(
-            #    app_id, bytes(box_name, "utf-8")
-            # )["value"]
-            # print(
-            #     "box value:",
-            #     base64.b64decode(box_value).decode("utf-8"),
-            # )
+    print(membership_record)
 
     # atc_2 = AtomicTransactionComposer()
     # txn_params = get_txn_params(algod_client, constants.MIN_TXN_FEE, 1)
