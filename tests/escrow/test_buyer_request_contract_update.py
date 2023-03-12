@@ -76,6 +76,8 @@ def test_buyer_request_contract_update(escrow_contract):
     app_address = logic.get_application_address(app_id)
     algod_client = Algod.getClient()
 
+    print(ContractUpdate().type_spec())
+
     print("app_address", app_address)
     app_logs = Indexer.getClient().application_logs(app_id)
     print("app_logs PRE", app_logs)

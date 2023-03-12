@@ -339,32 +339,36 @@ class EscrowContract(Application):
                         slr_proposed_updt.buyer.use(
                             lambda value: value.get() == buyer.get()
                         ),
-                        #                 rec_byr.seller.use(lambda value: value.get() == seller.get()),
-                        #                 rec_byr.escrow_1.use(
-                        #                     lambda value: value.get() == escrow_1.get()
-                        #                 ),
-                        #                 rec_byr.escrow_2.use(
-                        #                     lambda value: value.get() == escrow_2.get()
-                        #                 ),
-                        #                 rec_byr.total.use(lambda value: value.get() == total.get()),
-                        #                 # rec_byr.inspect_start_date.use(
-                        #                 #     lambda value: value.get() == inspect_start_date.get()
-                        #                 # ),
-                        #                 # rec_byr.inspect_end_date.use(
-                        #                 #     lambda value: value.get() == inspect_end_date.get()
-                        #                 # ),
-                        #                 # rec_byr.inspect_extension_date.use(
-                        #                 #     lambda value: value.get() == inspect_extension_date.get()
-                        #                 # ),
-                        #                 # rec_byr.moving_date.use(
-                        #                 #     lambda value: value.get() == moving_date.get()
-                        #                 # ),
-                        #                 # rec_byr.closing_date.use(
-                        #                 #     lambda value: value.get() == closing_date.get()
-                        #                 # ),
-                        #                 # rec_byr.free_funds_date.use(
-                        #                 #     lambda value: value.get() == free_funds_date.get()
-                        #                 # ),
+                        slr_proposed_updt.seller.use(
+                            lambda value: value.get() == seller.get()
+                        ),
+                        slr_proposed_updt.escrow_1.use(
+                            lambda value: value.get() == escrow_1.get()
+                        ),
+                        slr_proposed_updt.escrow_2.use(
+                            lambda value: value.get() == escrow_2.get()
+                        ),
+                        slr_proposed_updt.total.use(
+                            lambda value: value.get() == total.get()
+                        ),
+                        slr_proposed_updt.inspect_start_date.use(
+                            lambda value: value.get() == inspect_start_date.get()
+                        ),
+                        slr_proposed_updt.inspect_end_date.use(
+                            lambda value: value.get() == inspect_end_date.get()
+                        ),
+                        slr_proposed_updt.inspect_extension_date.use(
+                            lambda value: value.get() == inspect_extension_date.get()
+                        ),
+                        slr_proposed_updt.moving_date.use(
+                            lambda value: value.get() == moving_date.get()
+                        ),
+                        slr_proposed_updt.closing_date.use(
+                            lambda value: value.get() == closing_date.get()
+                        ),
+                        slr_proposed_updt.free_funds_date.use(
+                            lambda value: value.get() == free_funds_date.get()
+                        ),
                     ),
                 )
                 .Then(
@@ -457,32 +461,36 @@ class EscrowContract(Application):
                         buyer_proposed_updt.buyer.use(
                             lambda value: value.get() == buyer.get()
                         ),
-                        #                 rec_byr.seller.use(lambda value: value.get() == seller.get()),
-                        #                 rec_byr.escrow_1.use(
-                        #                     lambda value: value.get() == escrow_1.get()
-                        #                 ),
-                        #                 rec_byr.escrow_2.use(
-                        #                     lambda value: value.get() == escrow_2.get()
-                        #                 ),
-                        #                 rec_byr.total.use(lambda value: value.get() == total.get()),
-                        #                 # rec_byr.inspect_start_date.use(
-                        #                 #     lambda value: value.get() == inspect_start_date.get()
-                        #                 # ),
-                        #                 # rec_byr.inspect_end_date.use(
-                        #                 #     lambda value: value.get() == inspect_end_date.get()
-                        #                 # ),
-                        #                 # rec_byr.inspect_extension_date.use(
-                        #                 #     lambda value: value.get() == inspect_extension_date.get()
-                        #                 # ),
-                        #                 # rec_byr.moving_date.use(
-                        #                 #     lambda value: value.get() == moving_date.get()
-                        #                 # ),
-                        #                 # rec_byr.closing_date.use(
-                        #                 #     lambda value: value.get() == closing_date.get()
-                        #                 # ),
-                        #                 # rec_byr.free_funds_date.use(
-                        #                 #     lambda value: value.get() == free_funds_date.get()
-                        #                 # ),
+                        buyer_proposed_updt.seller.use(
+                            lambda value: value.get() == seller.get()
+                        ),
+                        buyer_proposed_updt.escrow_1.use(
+                            lambda value: value.get() == escrow_1.get()
+                        ),
+                        buyer_proposed_updt.escrow_2.use(
+                            lambda value: value.get() == escrow_2.get()
+                        ),
+                        buyer_proposed_updt.total.use(
+                            lambda value: value.get() == total.get()
+                        ),
+                        buyer_proposed_updt.inspect_start_date.use(
+                            lambda value: value.get() == inspect_start_date.get()
+                        ),
+                        buyer_proposed_updt.inspect_end_date.use(
+                            lambda value: value.get() == inspect_end_date.get()
+                        ),
+                        buyer_proposed_updt.inspect_extension_date.use(
+                            lambda value: value.get() == inspect_extension_date.get()
+                        ),
+                        buyer_proposed_updt.moving_date.use(
+                            lambda value: value.get() == moving_date.get()
+                        ),
+                        buyer_proposed_updt.closing_date.use(
+                            lambda value: value.get() == closing_date.get()
+                        ),
+                        buyer_proposed_updt.free_funds_date.use(
+                            lambda value: value.get() == free_funds_date.get()
+                        ),
                     ),
                 )
                 .Then(
@@ -520,7 +528,7 @@ class EscrowContract(Application):
                             closing_date,
                             free_funds_date,
                         ),
-                        self.buyer_updt[Bytes("seller_updt")].set(rec),
+                        self.seller_updt[Bytes("seller_updt")].set(rec),
                     )
                 ),
             )
@@ -539,7 +547,7 @@ class EscrowContract(Application):
                         closing_date,
                         free_funds_date,
                     ),
-                    self.buyer_updt[Bytes("seller_updt")].set(rec),
+                    self.seller_updt[Bytes("seller_updt")].set(rec),
                 )
             ),
             Approve(),
