@@ -1,11 +1,9 @@
-# type: ignore
-
 from typing import Literal
 from pyteal import *
 from pyteal.ast.bytes import Bytes
 from beaker.application import Application
 from beaker.decorators import external, create, delete, update
-from beaker.lib.storage import Mapping
+from beaker.lib.storage.mapping import Mapping
 from beaker.state import ApplicationStateValue
 
 from .constants import *
@@ -36,9 +34,8 @@ class ContractUpdate(abi.NamedTuple):
     inspect_start_date: abi.Field[abi.Uint64]
     inspect_end_date: abi.Field[abi.Uint64]
     inspect_extension_date: abi.Field[abi.Uint64]
-    moving_date: abi.Field[abi.Uint64]
     closing_date: abi.Field[abi.Uint64]
-    free_funds_date: abi.Field[abi.Uint64]
+    closing_extension_date: abi.Field[abi.Uint64]
 
 
 class EscrowContract(Application):
@@ -79,13 +76,10 @@ class EscrowContract(Application):
     glbl_inspect_extension_date: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64
     )
-    glbl_moving_date: ApplicationStateValue = ApplicationStateValue(
-        stack_type=TealType.uint64
-    )
     glbl_closing_date: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64
     )
-    glbl_free_funds_date: ApplicationStateValue = ApplicationStateValue(
+    glbl_closing_extension_date: ApplicationStateValue = ApplicationStateValue(
         stack_type=TealType.uint64
     )
     glbl_asa_id: ApplicationStateValue = ApplicationStateValue(
@@ -103,9 +97,8 @@ class EscrowContract(Application):
         glbl_inspect_start_date: abi.Uint64,
         glbl_inspect_end_date: abi.Uint64,
         glbl_inspect_extension_date: abi.Uint64,
-        glbl_moving_date: abi.Uint64,
         glbl_closing_date: abi.Uint64,
-        glbl_free_funds_date: abi.Uint64,
+        glbl_closing_extension_date: abi.Uint64,
         glbl_asa_id: abi.Uint64,
     ):
         return Seq(
@@ -133,9 +126,8 @@ class EscrowContract(Application):
                 And(
                     glbl_inspect_start_date.get() <= glbl_inspect_end_date.get(),
                     glbl_inspect_end_date.get() <= glbl_inspect_extension_date.get(),
-                    glbl_inspect_extension_date.get() <= glbl_moving_date.get(),
-                    glbl_moving_date.get() <= glbl_closing_date.get(),
-                    glbl_closing_date.get() <= glbl_free_funds_date.get(),
+                    glbl_inspect_extension_date.get() <= glbl_closing_date.get(),
+                    glbl_closing_date.get() <= glbl_closing_extension_date.get(),
                 )
             )
             .Then(
@@ -143,9 +135,8 @@ class EscrowContract(Application):
                     self.glbl_inspect_start_date.set(glbl_inspect_start_date.get()),  # type: ignore
                     self.glbl_inspect_end_date.set(glbl_inspect_end_date.get()),  # type: ignore
                     self.glbl_inspect_extension_date.set(glbl_inspect_extension_date.get()),  # type: ignore
-                    self.glbl_moving_date.set(glbl_moving_date.get()),  # type: ignore
                     self.glbl_closing_date.set(glbl_closing_date.get()),  # type: ignore
-                    self.glbl_free_funds_date.set(glbl_free_funds_date.get()),  # type: ignore
+                    self.glbl_closing_extension_date.set(glbl_closing_extension_date.get()),  # type: ignore
                 )
             )
             .Else(Reject()),
@@ -322,9 +313,8 @@ class EscrowContract(Application):
         inspect_start_date: abi.Uint64,
         inspect_end_date: abi.Uint64,
         inspect_extension_date: abi.Uint64,
-        moving_date: abi.Uint64,
         closing_date: abi.Uint64,
-        free_funds_date: abi.Uint64,
+        closing_extension_date: abi.Uint64,
     ):
         slr_proposed_updt = ContractUpdate()
         return Seq(
@@ -360,14 +350,11 @@ class EscrowContract(Application):
                         slr_proposed_updt.inspect_extension_date.use(
                             lambda value: value.get() == inspect_extension_date.get()
                         ),
-                        slr_proposed_updt.moving_date.use(
-                            lambda value: value.get() == moving_date.get()
-                        ),
                         slr_proposed_updt.closing_date.use(
                             lambda value: value.get() == closing_date.get()
                         ),
-                        slr_proposed_updt.free_funds_date.use(
-                            lambda value: value.get() == free_funds_date.get()
+                        slr_proposed_updt.closing_extension_date.use(
+                            lambda value: value.get() == closing_extension_date.get()
                         ),
                     ),
                 )
@@ -383,9 +370,8 @@ class EscrowContract(Application):
                         self.glbl_inspect_extension_date.set(
                             inspect_extension_date.get()
                         ),
-                        self.glbl_moving_date.set(moving_date.get()),
                         self.glbl_closing_date.set(closing_date.get()),
-                        self.glbl_free_funds_date.set(free_funds_date.get()),
+                        self.glbl_closing_extension_date.set(closing_extension_date.get()),
                         Pop(App.box_delete(Bytes("buyer_updt"))),
                         Pop(App.box_delete(Bytes("seller_updt"))),
                         Approve(),
@@ -402,9 +388,8 @@ class EscrowContract(Application):
                             inspect_start_date,
                             inspect_end_date,
                             inspect_extension_date,
-                            moving_date,
                             closing_date,
-                            free_funds_date,
+                            closing_extension_date,
                         ),
                         self.buyer_updt[Bytes("buyer_updt")].set(rec),
                     )
@@ -421,9 +406,8 @@ class EscrowContract(Application):
                         inspect_start_date,
                         inspect_end_date,
                         inspect_extension_date,
-                        moving_date,
                         closing_date,
-                        free_funds_date,
+                        closing_extension_date,
                     ),
                     self.buyer_updt[Bytes("buyer_updt")].set(rec),
                 )
@@ -442,9 +426,8 @@ class EscrowContract(Application):
         inspect_start_date: abi.Uint64,
         inspect_end_date: abi.Uint64,
         inspect_extension_date: abi.Uint64,
-        moving_date: abi.Uint64,
         closing_date: abi.Uint64,
-        free_funds_date: abi.Uint64,
+        closing_extension_date: abi.Uint64,
     ):
         buyer_proposed_updt = ContractUpdate()
         return Seq(
@@ -482,14 +465,11 @@ class EscrowContract(Application):
                         buyer_proposed_updt.inspect_extension_date.use(
                             lambda value: value.get() == inspect_extension_date.get()
                         ),
-                        buyer_proposed_updt.moving_date.use(
-                            lambda value: value.get() == moving_date.get()
-                        ),
                         buyer_proposed_updt.closing_date.use(
                             lambda value: value.get() == closing_date.get()
                         ),
-                        buyer_proposed_updt.free_funds_date.use(
-                            lambda value: value.get() == free_funds_date.get()
+                        buyer_proposed_updt.closing_extension_date.use(
+                            lambda value: value.get() == closing_extension_date.get()
                         ),
                     ),
                 )
@@ -505,9 +485,8 @@ class EscrowContract(Application):
                         self.glbl_inspect_extension_date.set(
                             inspect_extension_date.get()
                         ),
-                        self.glbl_moving_date.set(moving_date.get()),
                         self.glbl_closing_date.set(closing_date.get()),
-                        self.glbl_free_funds_date.set(free_funds_date.get()),
+                        self.glbl_closing_extension_date.set(closing_extension_date.get()),
                         Pop(App.box_delete(Bytes("buyer_updt"))),
                         Pop(App.box_delete(Bytes("seller_updt"))),
                         Approve(),
@@ -524,9 +503,8 @@ class EscrowContract(Application):
                             inspect_start_date,
                             inspect_end_date,
                             inspect_extension_date,
-                            moving_date,
                             closing_date,
-                            free_funds_date,
+                            closing_extension_date,
                         ),
                         self.seller_updt[Bytes("seller_updt")].set(rec),
                     )
@@ -543,9 +521,8 @@ class EscrowContract(Application):
                         inspect_start_date,
                         inspect_end_date,
                         inspect_extension_date,
-                        moving_date,
                         closing_date,
-                        free_funds_date,
+                        closing_extension_date,
                     ),
                     self.seller_updt[Bytes("seller_updt")].set(rec),
                 )

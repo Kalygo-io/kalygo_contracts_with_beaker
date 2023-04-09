@@ -15,7 +15,7 @@ GLOBAL_INSPECT_END_DATE = Bytes("glbl_inspect_end_date")  # stores uint64
 GLOBAL_INSPECT_EXTENSION_DATE = Bytes("glbl_inspect_extension_date")  # stores uint64
 GLOBAL_MOVING_DATE = Bytes("glbl_moving_date")
 GLOBAL_CLOSING_DATE = Bytes("glbl_closing_date")  # stores uint64
-GLOBAL_FREE_FUNDS_DATE = Bytes("glbl_free_funds_date")  # stores uint64
+GLOBAL_CLOSING_EXTENSION_DATE = Bytes("glbl_closing_extension_date")  # stores uint64
 
 GLOBAL_BUYER_PULLOUT_FLAG = Bytes("glbl_buyer_pullout_flag")  # stores uint64
 GLOBAL_BUYER_ARBITRATION_FLAG = Bytes("glbl_buyer_arbitration_flag")  # stores uint64

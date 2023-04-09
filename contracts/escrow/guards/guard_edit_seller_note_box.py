@@ -9,7 +9,7 @@ def guard_edit_seller_note_box(acct: Expr):
         Or(
             And(
                 App.globalGet(GLOBAL_SELLER) == acct,
-                Global.latest_timestamp() < App.globalGet(GLOBAL_FREE_FUNDS_DATE),
+                Global.latest_timestamp() < App.globalGet(GLOBAL_CLOSING_EXTENSION_DATE),
             )
         )
     )

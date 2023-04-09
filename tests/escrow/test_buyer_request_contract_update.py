@@ -56,9 +56,8 @@ def escrow_contract():
         int(get_current_timestamp()),  # Inspection Period Start Date
         int(get_future_timestamp_in_secs(60)),  # Inspection Period End Date
         int(get_future_timestamp_in_secs(90)),  # Inspection Period Extension Date
-        int(get_future_timestamp_in_secs(120)),  # Moving Date
         int(get_future_timestamp_in_secs(240)),  # Closing Date
-        int(get_future_timestamp_in_secs(360)),  # Free Funds Date
+        int(get_future_timestamp_in_secs(360)),  # Closing Extension Date
     )
     yield deployed_contract["app_id"]
     print()
@@ -101,7 +100,7 @@ def test_buyer_request_contract_update(escrow_contract):
 
     res = algod_client.account_info(app_address)
     print(">>> contract balance >>>", res["amount"])
-    # assert res["amount"] == 112100
+    assert res["amount"] == 212100
 
     # --- --- --- --- ---
 
@@ -122,7 +121,7 @@ def test_buyer_request_contract_update(escrow_contract):
         sender_private_key=buyer_private_key,
     )
 
-    print("_>_>_ _>_>_", res["amount"])
+    # print("_>_>_ _>_>_", res["amount"])
 
     res = algod_client.application_boxes(app_id)
     print(algod_client.application_boxes(app_id))
@@ -172,5 +171,5 @@ def test_buyer_request_contract_update(escrow_contract):
 
     assert res["amount"] == 0
 
-    app_logs = Indexer.getClient().application_logs(app_id)
-    print("app_logs POST", app_logs)
+    # app_logs = Indexer.getClient().application_logs(app_id)
+    # print("app_logs POST", app_logs)

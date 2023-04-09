@@ -50,9 +50,8 @@ def escrow_contract():
         int(get_current_timestamp()),  # Inspection Period Start Date
         int(get_future_timestamp_in_secs(20)),  # Inspection Period End Date
         int(get_future_timestamp_in_secs(30)),  # Inspection Period Extension Date
-        int(get_future_timestamp_in_secs(35)),  # Moving Date
         int(get_future_timestamp_in_secs(40)),  # Closing Date
-        int(get_future_timestamp_in_secs(45)),  # Free Funds Date
+        int(get_future_timestamp_in_secs(45)),  # Closing Extension Date
         foreign_apps=[],
         foreign_assets=[config.stablecoin_ASA],
     )

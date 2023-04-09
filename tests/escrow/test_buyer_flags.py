@@ -39,9 +39,8 @@ def escrow_contract():
         int(get_current_timestamp()),  # Inspection Period Start Date
         int(get_future_timestamp_in_secs(60)),  # Inspection Period End Date
         int(get_future_timestamp_in_secs(90)),  # Inspection Period Extension Date
-        int(get_future_timestamp_in_secs(120)),  # Moving Date
         int(get_future_timestamp_in_secs(240)),  # Closing Date
-        int(get_future_timestamp_in_secs(360)),  # Free Funds Date
+        int(get_future_timestamp_in_secs(360)),  # Closing Extension Date
     )
     yield deployed_contract["app_id"]
     print()

@@ -30,9 +30,8 @@ def deploy_new(
     inspection_start: int = int(get_current_timestamp()),
     inspection_end: int = int(get_future_timestamp_in_secs(60)),
     inspection_extension: int = int(get_future_timestamp_in_secs(90)),
-    moving_date=int(get_future_timestamp_in_secs(240)),
-    closing_date=int(get_future_timestamp_in_secs(300)),
-    free_funds_date=int(get_future_timestamp_in_secs(360)),
+    closing=int(get_future_timestamp_in_secs(300)),
+    closing_extension=int(get_future_timestamp_in_secs(360)),
     foreign_apps=[],
     foreign_assets=[],
 ):
@@ -67,9 +66,8 @@ def deploy_new(
         glbl_inspect_start_date=inspection_start,
         glbl_inspect_end_date=inspection_end,
         glbl_inspect_extension_date=inspection_extension,
-        glbl_moving_date=moving_date,
-        glbl_closing_date=closing_date,
-        glbl_free_funds_date=free_funds_date,
+        glbl_closing_date=closing,
+        glbl_closing_extension_date=closing_extension,
         glbl_asa_id=asa_id,
         note="cashBuy__v1.0.0",
     )
@@ -94,5 +92,5 @@ def deploy_new(
         "confirmed_round": confirmed_round,
         "inspection_start": inspection_start,
         "inspection_end": inspection_end,
-        "closing_date": closing_date
+        "closing_date": closing
     }

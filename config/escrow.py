@@ -7,15 +7,15 @@ indexer_url = "http://localhost:8980"
 indexer_token = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 app_id = 71
 wallet_id = "wallet_QWEASD"
-wallet_phrase = "clever distance glass price program perfect raccoon ticket club derive loan drift rose patch cook scene boss document deliver provide scout say dune above orient"
-account_a_address = "L6EHXNLW7ZPAH2R2J37562VT37UXARG64SWI65JMISSB6CLS5I4FKFAX6Y"
-account_a_mnemonic = "garlic search curve old wreck kingdom mean run stand off walk dove chunk spoon pond easy snow wrap risk hurt coconut cousin tragic abstract enter"
-account_b_address = "F5KZ5MKOEOMC5IKCOXY5RPYD2JJDB2TITX6YKSAH3T5IZKQWISTKCRNCDU"
-account_b_mnemonic = "oyster sing demise cattle smile half sting essence leave legend omit benefit slice mail jaguar segment aspect demise music domain shield puzzle pipe abandon fox"
-account_c_address = "EOJRAYX4VVWD7XLZLBMM2E6O7AACHV5DFEVJBP4DJB7LSGK7NXZUWMTICA"
-account_c_mnemonic = "crime grape world divorce case river control drip digital shy gown useful rescue need final bike theme depth mimic mistake cherry bright cloud able cabbage"
+wallet_phrase = "mixed fat kite card style arena neglect myth brass hood size sail top primary enhance faith plug win tuition once flag ring rotate able space"
+account_a_address = "J5PSF6MF6HSHD2HCFOA7DLCWEZ24QMAB6TZRHZ653E7SJGX6GKWXGCCKRM"
+account_a_mnemonic = "reopen web sell love announce spawn cradle village monkey tone hope loyal author solution obey exhaust lobster harbor pink share prefer present license ability saddle"
+account_b_address = "EV33Q4G5JIXQDMFMK3VFAEYMRRGCZZ5BZEMHTBCHJTV3L3CLPQIWPB5RUI"
+account_b_mnemonic = "curtain hidden horn casual dirt shove exile lunar merge just flush health cube session benefit elegant regular mean burger method foot net vapor abstract defy"
+account_c_address = "GC3Y4VTPAG3BUYMOID3YLTGNZRR7PNQYF4POJKB25ZG2BOLERZBPZH7JLY"
+account_c_mnemonic = "cup shop firm weasel sweet enroll lounge mango false verify winner weasel box bike captain spray disease twin width ring dash artefact tongue abstract pitch"
 
-stablecoin_ASA = 4
+stablecoin_ASA = 12
 
 escrow_payment_1 = 1000000
 escrow_payment_2 = 2000000
